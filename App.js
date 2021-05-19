@@ -55,8 +55,8 @@ const Section = ({children, title}): Node => {
 };
 
 const translate = new AWS.Translate({
-  accessKeyId: 'AKIA2OLOFAT35MKXQEVU',
-  secretAccessKey: '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',
+  accessKeyId: '*************',
+  secretAccessKey: '************',
   region: 'us-east-2',
 })
 
