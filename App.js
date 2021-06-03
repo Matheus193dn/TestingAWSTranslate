@@ -6,8 +6,8 @@
  * @flow strict-local
  */
 
-import React from 'react';
-import type {Node} from 'react';
+import React, { useEffect } from 'react';
+import type { Node } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -27,8 +27,10 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 import AWS from 'aws-sdk';
+import RNFS, { downloadFile } from 'react-native-fs';
+import CameraRoll from '@react-native-community/cameraroll';
 
-const Section = ({children, title}): Node => {
+const Section = ({ children, title }): Node => {
   const isDarkMode = useColorScheme() === 'dark';
   return (
     <View style={styles.sectionContainer}>
@@ -61,25 +63,46 @@ const translate = new AWS.Translate({
 })
 
 const App: () => Node = () => {
-  const params = {
-    SourceLanguageCode: 'vi',
-    TargetLanguageCode: 'en',
-    Text: 'Sử dụng dịch vụ dịch của AWS',
-  };
+  // const params = {
+  //   SourceLanguageCode: 'vi',
+  //   TargetLanguageCode: 'en',
+  //   Text: 'Sử dụng dịch vụ dịch của AWS',
+  // };
 
-  translate.translateText(params, (error, data) => {
-    if (error) {
-      console.log('error: ', error);
-    } else {
-      console.log('data: ', data);
-    }
-  });
+  // translate.translateText(params, (error, data) => {
+  //   if (error) {
+  //     console.log('error: ', error);
+  //   } else {
+  //     console.log('data: ', data);
+  //   }
+  // });
 
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
+
+
+  const downloadFile = () => {
+    console.log('start download');
+    const fileURL = 'https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_1920_18MG.mp4';
+    const downloadDest = `${RNFS.DocumentDirectoryPath}/file_example_MP4_1920_18MG.mp4`;
+    const ret = RNFS.downloadFile({ fromUrl: fileURL, toFile: downloadDest });
+
+    ret.promise.then(async res => {
+      console.log('file downloaded');
+      console.log('res: ', res);
+      const filePath = 'file://' + downloadDest;
+      await CameraRoll.save(filePath).then(console.log);
+    }).catch(err => {
+      console.log('download err: ', err);
+    });
+  }
+
+  useEffect(() => {
+    downloadFile();
+  }, []);
 
   return (
     <SafeAreaView style={backgroundStyle}>
